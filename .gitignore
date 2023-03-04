@@ -1,0 +1,6 @@
+# Directories
+/env/
+/notes/
+
+# Compiled Bytecode
+*pyc
