@@ -4,3 +4,6 @@
 
 # Compiled Bytecode
 *pyc
+
+# Database
+db.sqlite3
