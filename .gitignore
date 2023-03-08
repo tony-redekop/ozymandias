@@ -5,4 +5,7 @@
 # Compiled Bytecode
 *pyc
 
+# Test files
+.coverage
+
 # Database
