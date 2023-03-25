@@ -4,7 +4,7 @@ Advanced Python and Django backend for a manufacturing process management dashbo
 
 ---
 
-## Goals 
+### Goals 
 
   - implement user authorization / authentication using OAuth2 and OpenID
   - runs on Docker container and started with single command `docker-compose up`
@@ -16,7 +16,7 @@ Advanced Python and Django backend for a manufacturing process management dashbo
   - PostgreSQL database backend
 ---
 
-## Instructions 
+### Instructions 
 
 **Unit Tests**
 1.  `$ cd ozymandias/project`
