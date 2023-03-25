@@ -8,4 +8,7 @@
 # Test files
 .coverage
 
+# Environment variables
+.env
+
 # Database
