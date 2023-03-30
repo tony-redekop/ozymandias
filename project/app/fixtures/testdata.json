@@ -1,0 +1,10 @@
+[
+  {
+    "model": "app.ManufacturingProcess",
+    "pk": 1,
+    "fields": {
+      "name": "Heat Treat",
+      "description": "Heat treat to improve mechanical properties"
+    }
+  }
+]
