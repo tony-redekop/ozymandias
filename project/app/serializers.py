@@ -4,11 +4,9 @@ from rest_framework import serializers
 class ManufacturingProcessSerializer(serializers.HyperlinkedModelSerializer):
   class Meta:
     model = ManufacturingProcess
-    fields = ['id', 'name', 'description']
+    fields = ['pk', 'name', 'description']
 
 class OperationSerializer(serializers.HyperlinkedModelSerializer):
   class Meta:
     model = Operation 
-    fields = ['id', 'name', 'description', 'cycle_time', 'process']
-
-
+    fields = ['pk', 'name', 'description', 'cycle_time', 'process']

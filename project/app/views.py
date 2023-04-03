@@ -33,15 +33,15 @@ class ManufacturingProcessList(APIView):
 class ManufacturingProcessDetail(APIView):
   permission_classes = [permissions.IsAuthenticated]
 
-  def get_object(self, id):
+  def get_object(self, pk):
     try:
-      return ManufacturingProcess.objects.get(id=id)
+      return ManufacturingProcess.objects.get(pk=pk)
     except ManufacturingProcess.DoesNotExist:
       raise Http404
 
-  def get(self, request, id, format=None):
+  def get(self, request, pk, format=None):
 
-    manufacturingprocess = self.get_object(id)
+    manufacturingprocess = self.get_object(pk)
 
     serializer = ManufacturingProcessSerializer(
       manufacturingprocess,
@@ -53,15 +53,15 @@ class ManufacturingProcessDetail(APIView):
       return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-  def put(self, request, id, format=None):
-    manufacturingprocess = self.get_object(id)
+  def put(self, request, pk, format=None):
+    manufacturingprocess = self.get_object(pk)
     serializer = ManufacturingProcessSerializer(manufacturingprocess, data=request.data)
     if serializer.is_valid():
       serializer.save()
       return Response(serializer.data)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-  def delete(self, request, id, format=None):
-    manufacturingprocess = self.get_object(id)
+  def delete(self, request, pk, format=None):
+    manufacturingprocess = self.get_object(pk)
     manufacturingprocess.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
