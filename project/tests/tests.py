@@ -71,6 +71,7 @@ class ManufacturingProcessTestCase(TestCase):
       'pk': manufacturing_process.pk,
       'name': 'Test name',
       'description': 'Test description',
+      'operations': []
     }
     process_serializer = ManufacturingProcessSerializer(manufacturing_process)
     self.assertEqual(expected_data, process_serializer.data)
@@ -127,7 +128,8 @@ class OperationTestCase(TestCase):
     serializer_context = {'request': Request(request)}
     operation_serializer = OperationSerializer(self.operation, context=serializer_context)
 
-    url = reverse('manufacturingprocess-detail',
+    # Must add namespace 'app:' before the URL pattern name
+    url = reverse('app:manufacturingprocess-detail',
       args=[self.manufacturing_process.pk]
     )
 
