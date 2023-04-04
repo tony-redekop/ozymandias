@@ -47,6 +47,7 @@ def setup_client(instance):
 class ManufacturingProcessTestCase(TestCase):
   def setUp(self):
     setup_client(self)  # set up test client
+    # self.client.get('/invalid-url/')  # clear URL pattern cache
 
   def test_model(self):
     # Create model instance and save to test database
@@ -95,10 +96,17 @@ class OperationTestCase(TestCase):
   fixtures = ['testdata.json']
 
   def setUp(self):
+    setup_client(self)
+
     # Call Django management command from our code to load fixture data into test database
     call_command('loaddata', 'testdata.json', verbosity=0)  # equivalent to 'python manage.py loaddata testdata.json'
 
     self.manufacturing_process = ManufacturingProcess.objects.get(pk=1)
+
+    # Define URLs for related fields
+    self.url = reverse('app:manufacturingprocess-detail',
+      args=[self.manufacturing_process.pk]
+    )
 
     self.operation = Operation(
       name="Load Furnace",
@@ -148,4 +156,30 @@ class OperationTestCase(TestCase):
     self.assertEqual(operation_serializer.data, expected_data)
 
   def test_detail_view(self):
-    pass
+
+    # Create test data
+    testdata = {
+      "pk": self.operation.pk,
+      "name": "Load Furnace",
+      "description": "Load on a flat plate",
+      "cycle_time": f"0{timedelta(seconds=90)}",
+      "process": f"http://testserver{self.url}",
+    }
+  
+    # Test HTTP POST request
+    # Must add namespace 'app:' before the URL pattern name
+    url = reverse('app:operation-list',
+      args=[self.manufacturing_process.pk]
+    )
+
+    response = self.client.post(url, testdata, format='json')
+    self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    operation_pk = response.data['pk']
+
+    url = reverse('app:operation-detail',
+      args=[self.manufacturing_process.pk, operation_pk]
+    )
+
+    response  = self.client.get(url)
+    self.assertTrue(status.is_success(response.status_code))
