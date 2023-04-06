@@ -25,6 +25,7 @@ schema_view = get_schema_view(
 
 # When using class-based views, as_view() attribute generates callable view function
 urlpatterns = [
+  path('', views.RootView.as_view(), name='root-view'),
   path('processes/', views.ManufacturingProcessList.as_view(), name='manufacturingprocess-list'),
   path('processes/<int:pk>/', views.ManufacturingProcessDetail.as_view(), name='manufacturingprocess-detail'),
   path('processes/<int:pk>/operations/', views.OperationList.as_view(), name='operation-list'),

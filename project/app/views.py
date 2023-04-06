@@ -29,6 +29,12 @@ class ManufacturingProcessList(APIView):
       return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class RootView(APIView):
+  permission_classes = [permissions.IsAuthenticated]
+
+  def get(self, request):
+    return Response({"message": "Welcome to ozymandias API"})
+
 # Handles requests that specify a specific object or instance
 class ManufacturingProcessDetail(APIView):
   permission_classes = [permissions.IsAuthenticated]
