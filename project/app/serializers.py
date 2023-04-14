@@ -5,7 +5,7 @@ class ManufacturingProcessSerializer(serializers.HyperlinkedModelSerializer):
   operations = serializers.HyperlinkedRelatedField(
     many=True,
     read_only=True,
-    view_name='app:operation-detail'
+    view_name='app:operation-list'
   )
   class Meta:
     model = ManufacturingProcess
