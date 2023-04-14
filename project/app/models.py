@@ -6,6 +6,9 @@ class ManufacturingProcess(models.Model):
   name = models.CharField(blank=True, max_length=255)
   description = models.TextField(blank=True)
 
+# In a one-to-many relationship, a parent entity has multiple child entities.
+# Define a ForeignKey field in the child model that references the parent model.
+# The related_name is the field in parent model that references child model.
 class Operation(models.Model):
   name = models.CharField(max_length=255)
   description = models.TextField()
@@ -13,4 +16,5 @@ class Operation(models.Model):
   process = models.ForeignKey(
     ManufacturingProcess,
     on_delete=models.CASCADE,
+    related_name='operations'
   )
