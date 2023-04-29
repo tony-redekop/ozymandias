@@ -79,7 +79,7 @@ class ManufacturingProcessTestCase(TestCase):
 
   def test_detail_view(self):
     # Create test data
-    data = {'name':'RECIEVE_INSPECT', 'description': 'INSPECT FOR DAMAGE'}
+    data = {'pk': 1, 'name':'RECIEVE_INSPECT', 'description': 'INSPECT FOR DAMAGE'}
 
     # Test HTTP POST request
     response = self.client.post('/processes/', data, format='json')
@@ -111,6 +111,7 @@ class OperationTestCase(TestCase):
     self.operation = Operation(
       name="Load Furnace",
       description="Load on a flat plate",
+      op_number=10,
       cycle_time=timedelta(seconds=90),
       process=self.manufacturing_process,  # note: using instance, not instance.pk 
     )
@@ -148,38 +149,40 @@ class OperationTestCase(TestCase):
     expected_data = {
       "pk": self.operation.pk,
       "name": "Load Furnace",
+      "op_number": 10,
       "description": "Load on a flat plate",
       "cycle_time": f"0{timedelta(seconds=90)}",
       "process": f"http://testserver{url}",
     }
-
     self.assertEqual(operation_serializer.data, expected_data)
 
   def test_detail_view(self):
 
     # Create test data
+    op_number = 10    
     testdata = {
       "pk": self.operation.pk,
       "name": "Load Furnace",
+      "op_number": op_number,
       "description": "Load on a flat plate",
       "cycle_time": f"0{timedelta(seconds=90)}",
       "process": f"http://testserver{self.url}",
     }
-  
-    # Test HTTP POST request
+
+    # Test HTTP PUT request
     # Must add namespace 'app:' before the URL pattern name
-    url = reverse('app:operation-list',
-      args=[self.manufacturing_process.pk]
-    )
-
-    response = self.client.post(url, testdata, format='json')
-    self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-    operation_pk = response.data['pk']
-
     url = reverse('app:operation-detail',
-      args=[self.manufacturing_process.pk, operation_pk]
+      args=[self.manufacturing_process.pk, op_number]
     )
 
+    response = self.client.put(url, testdata, format='json')
+
+    self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    # Test HTTP GET request
+    operation_pk = response.data['pk']
+    url = reverse('app:operation-detail',
+      args=[self.manufacturing_process.pk, op_number]
+    )
     response  = self.client.get(url)
     self.assertTrue(status.is_success(response.status_code))

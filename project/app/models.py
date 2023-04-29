@@ -12,6 +12,7 @@ class ManufacturingProcess(models.Model):
 class Operation(models.Model):
   name = models.CharField(max_length=255)
   description = models.TextField()
+  op_number = models.PositiveIntegerField(unique=True)
   cycle_time = models.DurationField() 
   process = models.ForeignKey(
     ManufacturingProcess,

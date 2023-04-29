@@ -146,13 +146,14 @@ class OperationList(APIView):
     request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
         properties={
+            'op_number': openapi.Schema(type=openapi.TYPE_INTEGER, format=openapi.FORMAT_INT32),
             'name': openapi.Schema(type=openapi.TYPE_STRING, max_length=255),
             'description': openapi.Schema(type=openapi.TYPE_STRING),
             'cycle_time': openapi.Schema(type=openapi.TYPE_STRING),
             'process': openapi.Schema(type=openapi.TYPE_STRING),
             # Add more fields as needed
         },
-        required=['name', 'description', 'cycle_time', 'process']  # Specify required fields
+        required=['op_number', 'name', 'description', 'cycle_time', 'process']  # Specify required fields
     ),
     responses={201: 'Created', 400: 'Bad Request'}
   )
@@ -170,16 +171,21 @@ class OperationDetail(APIView):
 
   permission_classes = [permissions.IsAuthenticated]
   # authentication_classes = [BasicAuthentication]
-
-  # pk is primary key of related model; operation_pk is primary key of object we want
-  def get_object(self, pk, operation_pk):
+  '''
+  `pk` is primary key of related model; `op_number` is non-primary-key identifer
+  Exposing a URL with op_number instead of a primary key is more user-friendly
+  and integrates better with our business logic
+  '''
+  def get_object(self, pk, op_number):
     try:
-      return Operation.objects.get(pk=operation_pk, process_id=pk)
+      # `process_id` parameter points to primary key of related entity
+      # `process` is the name of ForeignKey field in the model and appending `_id` is Django / DRF specific behavior
+      return Operation.objects.get(process_id=pk, op_number=op_number)
     except Operation.DoesNotExist:
       raise Http404
 
-  def get(self, request, pk, operation_pk):
-    operation = self.get_object(pk, operation_pk)
+  def get(self, request, pk, op_number):
+    operation = self.get_object(pk, op_number)
     serializer = OperationSerializer(operation,
       context={'request': request},  # context required when using hyper-linked relations
     )
@@ -190,18 +196,19 @@ class OperationDetail(APIView):
         type=openapi.TYPE_OBJECT,
         properties={
             'name': openapi.Schema(type=openapi.TYPE_STRING, max_length=255),
+            'op_number': openapi.Schema(type=openapi.TYPE_INTEGER, format=openapi.FORMAT_INT32),
             'description': openapi.Schema(type=openapi.TYPE_STRING),
             'cycle_time': openapi.Schema(type=openapi.TYPE_STRING),
             'process': openapi.Schema(type=openapi.TYPE_STRING),
             # Add more fields as needed
         },
-        required=['name', 'description', 'cycle_time', 'process']  # Specify required fields
+        required=['name', 'op_number', 'description', 'cycle_time', 'process']  # Specify required fields
     ),
     responses={200: 'OK', 201: 'Created', 400: 'Bad Request'}
   )
-  def put(self, request, pk, operation_pk, format=None):
+  def put(self, request, pk, op_number, format=None):
     try:
-      operation = self.get_object(pk, operation_pk)
+      operation = self.get_object(pk, op_number)
       serializer = OperationSerializer(
         operation,
         data=request.data,
@@ -224,7 +231,7 @@ class OperationDetail(APIView):
     else:
       return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-  def delete(self, request, pk, operation_pk, format=None):
-    operation = self.get_object(pk, operation_pk)
+  def delete(self, request, pk, op_number, format=None):
+    operation = self.get_object(pk, op_number)
     operation.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)

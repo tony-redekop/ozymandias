@@ -21,4 +21,4 @@ class OperationSerializer(serializers.HyperlinkedModelSerializer):
   )
   class Meta:
     model = Operation 
-    fields = ['pk', 'name', 'description', 'cycle_time', 'process']
+    fields = ['pk', 'op_number', 'name', 'description', 'cycle_time', 'process']

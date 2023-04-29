@@ -29,7 +29,7 @@ urlpatterns = [
   path('processes/', views.ManufacturingProcessList.as_view(), name='manufacturingprocess-list'),
   path('processes/<int:pk>/', views.ManufacturingProcessDetail.as_view(), name='manufacturingprocess-detail'),
   path('processes/<int:pk>/operations/', views.OperationList.as_view(), name='operation-list'),
-  path('processes/<int:pk>/operations/<int:operation_pk>/', views.OperationDetail.as_view(), name='operation-detail'),
+  path('processes/<int:pk>/operations/<int:op_number>/', views.OperationDetail.as_view(), name='operation-detail'),
   path('admin/', admin.site.urls),
 
   # re_path allows us to use regex in our path
