@@ -87,6 +87,11 @@ class ManufacturingProcessTestCase(TestCase):
     process_serializer = ManufacturingProcessSerializer(manufacturing_process)
     self.assertEqual(expected_data, process_serializer.data)
 
+  def test_list_view(self):
+    # Test HTTP GET request
+    response = self.client.get('/processes/')
+    self.assertTrue(status.is_success(response.status_code))
+
   def test_detail_view(self):
     # Create test data
     data = {'pk': 1, 'name':'RECIEVE_INSPECT', 'description': 'INSPECT FOR DAMAGE'}
