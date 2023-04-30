@@ -12,6 +12,12 @@ from app.models import Operation
 from app.serializers import ManufacturingProcessSerializer
 from app.serializers import OperationSerializer
 
+class RootView(APIView):
+  permission_classes = [permissions.IsAuthenticated]
+
+  def get(self, request):
+    return Response({"message": "Welcome to ozymandias API"})
+
 # Handles requests that don't specify a specific entity or instance
 class ManufacturingProcessList(APIView):
   permission_classes = [permissions.IsAuthenticated]
@@ -48,12 +54,6 @@ class ManufacturingProcessList(APIView):
       serializer.save()
       return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-class RootView(APIView):
-  permission_classes = [permissions.IsAuthenticated]
-
-  def get(self, request):
-    return Response({"message": "Welcome to ozymandias API"})
 
 # Handles requests that specify a specific object or instance
 class ManufacturingProcessDetail(APIView):

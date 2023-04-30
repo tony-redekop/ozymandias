@@ -40,6 +40,16 @@ def setup_client(instance):
   # base64_credentials = base64.b64encode(credentials).decode('utf-8')
   # self.client.credentials(HTTP_AUTHORIZATION='Basic ' + base64_credentials)
 
+class RootViewTestCase(TestCase):
+  def setUp(self):
+    setup_client(self)  # set up test client
+  
+  def test_root_view(self):
+    # Test HTTP GET request
+    url = reverse('app:root-view')
+    response  = self.client.get(url)
+    self.assertTrue(status.is_success(response.status_code))
+
 # Note: setUp() is run before each test method is run.
 # Django flushes test database after each test method completes.
 # PostgreSQL doesn't reset auto-incrementing primary key after a flush.
