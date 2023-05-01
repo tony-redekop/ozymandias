@@ -63,6 +63,10 @@ class ManufacturingProcessDetail(APIView):
     try:
       return ManufacturingProcess.objects.get(pk=pk)
     except ManufacturingProcess.DoesNotExist:
+      # If using a PUT request, we create a resource if it doesn't exist
+      if self.request.method == 'PUT':
+        return
+      # If not PUT, we raise a 404
       raise Http404
 
   def get(self, request, pk, format=None):

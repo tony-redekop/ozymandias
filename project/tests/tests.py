@@ -87,23 +87,36 @@ class ManufacturingProcessTestCase(TestCase):
     process_serializer = ManufacturingProcessSerializer(manufacturing_process)
     self.assertEqual(expected_data, process_serializer.data)
 
-  def test_list_view(self):
-    # Test HTTP GET request
-    response = self.client.get('/processes/')
-    self.assertTrue(status.is_success(response.status_code))
-
-  def test_detail_view(self):
+  def test_views(self):
     # Create test data
-    data = {'pk': 1, 'name':'RECIEVE_INSPECT', 'description': 'INSPECT FOR DAMAGE'}
+    # data = {'pk': 1, 'name':'RECIEVE_INSPECT', 'description': 'INSPECT FOR DAMAGE'}
+    data = {'name':'RECIEVE_INSPECT', 'description': 'INSPECT FOR DAMAGE'}
 
-    # Test HTTP POST request
+    # Test list-view POST request
     response = self.client.post('/processes/', data, format='json')
     process_pk = response.data['pk']
     self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-    # Test HTTP GET request
-    response  = self.client.get(f'/processes/{process_pk}/')
+    # Test list-view GET request
+    response = self.client.get('/processes/')
     self.assertTrue(status.is_success(response.status_code))
+    
+    # Test detail-view GET request
+    response = self.client.get(f'/processes/{process_pk}/')
+    self.assertTrue(status.is_success(response.status_code))
+
+    # Test detail-view DELETE request
+    response = self.client.delete(f'/processes/{process_pk}/')
+    self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    # Test detail-view PUT request
+    # Our implementation of PUT is idempotent in conformance to RESTful design principles
+    # But if the resource with given pk does not exist, a new resource is created
+    url = reverse('app:manufacturingprocess-detail',
+      args=[process_pk]
+    )
+    response = self.client.put(url, data, format='json')
+    self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
 class OperationTestCase(TestCase):
   # We use a test fixture to avoid duplication
@@ -171,8 +184,7 @@ class OperationTestCase(TestCase):
     }
     self.assertEqual(operation_serializer.data, expected_data)
 
-  def test_detail_view(self):
-
+  def test_views(self):
     # Create test data
     op_number = 10    
     testdata = {
@@ -184,20 +196,26 @@ class OperationTestCase(TestCase):
       "process": f"http://testserver{self.url}",
     }
 
-    # Test HTTP PUT request
-    # Must add namespace 'app:' before the URL pattern name
+    # Test detail-view PUT request
     url = reverse('app:operation-detail',
       args=[self.manufacturing_process.pk, op_number]
     )
-
     response = self.client.put(url, testdata, format='json')
-
     self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    # Test HTTP GET request
-    operation_pk = response.data['pk']
+    # Test list-view GET request
+    url = reverse('app:operation-list',
+      args=[self.manufacturing_process.pk]
+    )
+    response = self.client.get(url)
+
+    # Test detail-view GET request
     url = reverse('app:operation-detail',
       args=[self.manufacturing_process.pk, op_number]
     )
-    response  = self.client.get(url)
+    response = self.client.get(url)
     self.assertTrue(status.is_success(response.status_code))
+
+    # Test detail-view DELETE request
+    response = self.client.delete(url)
+    self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
