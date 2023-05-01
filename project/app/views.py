@@ -141,31 +141,6 @@ class OperationList(APIView):
     )
     return Response(serializer.data)
 
-  # @swagger_auto_schema decorator provided by drf-yasg defines additional request body parameters
-  @swagger_auto_schema(
-    request_body=openapi.Schema(
-        type=openapi.TYPE_OBJECT,
-        properties={
-            'op_number': openapi.Schema(type=openapi.TYPE_INTEGER, format=openapi.FORMAT_INT32),
-            'name': openapi.Schema(type=openapi.TYPE_STRING, max_length=255),
-            'description': openapi.Schema(type=openapi.TYPE_STRING),
-            'cycle_time': openapi.Schema(type=openapi.TYPE_STRING),
-            'process': openapi.Schema(type=openapi.TYPE_STRING),
-            # Add more fields as needed
-        },
-        required=['op_number', 'name', 'description', 'cycle_time', 'process']  # Specify required fields
-    ),
-    responses={201: 'Created', 400: 'Bad Request'}
-  )
-  def post(self, request, pk, format=None):
-    serializer = OperationSerializer(data=request.data,
-      context={'request': request} # This is required because we use hyper-linked relations
-    )
-    if serializer.is_valid():
-      serializer.save()
-      return Response(serializer.data, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 # Handles requests that specify a specific object or instance
 class OperationDetail(APIView):
 
